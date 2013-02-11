@@ -16,20 +16,22 @@ public final class CSVSerdeTest {
   
   @Before
   public void setup() throws Exception {
-    props.put(Constants.LIST_COLUMNS, "a,b,c");
-    props.put(Constants.LIST_COLUMN_TYPES, "string,string,string");
+    props.put(Constants.LIST_COLUMNS, "a,b,c,d,e");
+    props.put(Constants.LIST_COLUMN_TYPES, "string,string,string,int,string");
   }
   
   @Test
   public void testDeserialize() throws Exception {
     csv.initialize(null, props);    
-    final Text in = new Text("hello,\"yes, okay\",1");
+    final Text in = new Text("hello,\"yes, okay\",1,1,test");
     
     final List<String> row = (List<String>) csv.deserialize(in);
 
     assertEquals("hello", row.get(0));
     assertEquals("yes, okay", row.get(1));
     assertEquals("1", row.get(2));
+    assertEquals(1, row.get(3));
+    assertEquals("test", row.get(4));
   }
   
   
