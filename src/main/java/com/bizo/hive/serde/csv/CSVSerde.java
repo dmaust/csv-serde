@@ -20,6 +20,7 @@ import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector.Category;
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspectorFactory;
 import org.apache.hadoop.hive.serde2.objectinspector.StructField;
 import org.apache.hadoop.hive.serde2.objectinspector.StructObjectInspector;
+import org.apache.hadoop.hive.serde2.objectinspector.primitive.IntObjectInspector;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory;
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.StringObjectInspector;
 import org.apache.hadoop.hive.serde2.typeinfo.TypeInfo;
@@ -132,13 +133,14 @@ public final class CSVSerde implements SerDe {
 			final ObjectInspector fieldOI = outputFieldRefs.get(c)
 					.getFieldObjectInspector();
 
-			// The data must be of type String
-			final StringObjectInspector fieldStringOI = (StringObjectInspector) fieldOI;
-
-			// Convert the field to Java class String, because objects of String
-			// type
-			// can be stored in String, Text, or some other classes.
-			outputFields[c] = fieldStringOI.getPrimitiveJavaObject(field);
+			// The data must be of type String or Integer
+			if(fieldOI instanceof StringObjectInspector){
+				final StringObjectInspector fieldStringOI =  (StringObjectInspector) fieldOI;
+				outputFields[c] = fieldStringOI.getPrimitiveJavaObject(field);
+			} else if (fieldOI instanceof IntObjectInspector){
+				final IntObjectInspector fieldIntOI =  (IntObjectInspector) fieldOI;
+				outputFields[c] = fieldIntOI.getPrimitiveJavaObject(field).toString();
+			}
 		}
 
 		final StringWriter writer = new StringWriter();
